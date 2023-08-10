@@ -1,0 +1,43 @@
+make CROSS_COMPILE=aarch64-linux-gun- LLVM=1 LLVM_IAS=1 ARCH=arm64 -C /root/kernel_xiaomi_sm8350-miui/out M=$PWD -j16
+llvm-strip --strip-debug maimhng.ko
+
+
+MODULE_NAME := maimhng
+RESMAN_CORE_OBJS:=
+RESMAN_GLUE_OBJS:=
+ifneq ($(KERNELRELEASE),)
+	$(MODULE_NAME)-objs:=$(RESMAN_CORE_OBJS) $(RESMAN_GLUE_OBJS)
+		obj-m := maimhng.o
+	maimhng-objs := memory.o process.o entry.o
+else
+	KDIR := /root/kernel_xiaomi_sm8350-miui/out
+all:
+	make -C $(KDIR) M=$(PWD) modules
+	rm -rf *.mod .*cmd *.o *.mod.c .tmp_versions *.order *symvers *Module.markers .*.d
+	llvm-strip --strip-debug maimhng.ko
+clean:
+	rm -rf *.mod .*cmd *.o *.mod.c .tmp_versions *.order *symvers *Module.markers .*.d
+endif
+
+
+
+
+
+
+
+MODULE_NAME := k
+RESMAN_CORE_OBJS := entry.o
+RESMAN_GLUE_OBJS := process.o memory.o
+
+$(MODULE_NAME)-objs := $(RESMAN_CORE_OBJS) $(RESMAN_GLUE_OBJS)
+obj-m := k.o
+KER=/root/kernel_xiaomi_sm8350-miui/out
+
+all:
+	@rm -rf *.ko
+	@make -C $(KER) M=$(PWD) modules
+	@rm -rf *.mod* *.sym* .*.cmd *.order *.o
+
+clean:
+	@rm -rf *.ko
+	@rm -rf *.mod *.sym .*.cmd *.order *.    
